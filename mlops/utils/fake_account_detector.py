@@ -8,8 +8,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, roc_auc_score, confusion_matrix
 import tensorflow as tf
 from tensorflow.keras import losses
-from pymongo import MongoClient
-from dotenv import load_dotenv
 import logging
 import joblib
 from typing import List, Tuple, Dict, Any
@@ -115,39 +113,25 @@ class FakeAccountDetector:
         
         return df
     
-    def load_and_preprocess_data(self, real_users_collection: str, fake_users_collection: str) -> Tuple[pd.DataFrame, pd.Series]:
+    def load_and_preprocess_data(self, real_users_path: str, fake_users_path: str) -> Tuple[pd.DataFrame, pd.Series]:
         """
-        Load and preprocess the dataset from MongoDB.
+        Load and preprocess the dataset.
         
         Args:
-            real_users_collection: Name of the real users collection in MongoDB
-            fake_users_collection: Name of the fake users collection in MongoDB
+            real_users_path: Path to real users CSV
+            fake_users_path: Path to fake users CSV
             
         Returns:
             Tuple of features (X) and labels (y)
         """
-        load_dotenv()
-        self.logger.info("Connecting to MongoDB...")
-        connection_string = os.getenv("MONGO_CONN_STRING")
-
-        client = MongoClient(connection_string)  
-        db = client['fake_account_data']  
+        self.logger.info("Loading datasets...")
+        users = pd.read_csv(real_users_path)
+        fusers = pd.read_csv(fake_users_path)
         
-        # Fetch real and fake users data
-        real_users = pd.DataFrame(db[real_users_collection].find())
-        fake_users = pd.DataFrame(db[fake_users_collection].find())
+        users['is_fake'] = 0
+        fusers['is_fake'] = 1
         
-        # Close the MongoDB connection
-        client.close()
-
-        self.logger.info(f"Loaded {len(real_users)} real users and {len(fake_users)} fake users.")
-        
-        # Add labels for real (0) and fake (1) users
-        real_users['is_fake'] = 0
-        fake_users['is_fake'] = 1
-        
-        # Concatenate the data
-        data = pd.concat([real_users, fake_users], ignore_index=True)
+        data = pd.concat([users, fusers], ignore_index=True)
         
         # Handle missing values
         for col in data.columns:
@@ -179,6 +163,7 @@ class FakeAccountDetector:
             X[col] = self.encoders[col].fit_transform(X[col].astype(str))
         
         return X, y
+
     
     def prepare_lstm_data(self, X: np.ndarray) -> np.ndarray:
         """Reshape data for LSTM input."""
