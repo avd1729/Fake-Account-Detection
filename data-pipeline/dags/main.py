@@ -31,14 +31,14 @@ with DAG(dag_id='etl_pipeline',
        try:
            extract_data_from_csv()
        except:
-           pass
+           logging.error("Data Extraction failed!.")
 
     @task
     def transform():
         try:
            transform_data()
         except:
-           pass
+           logging.error("Data Transformation failed!.")
 
 
     @task
@@ -46,6 +46,6 @@ with DAG(dag_id='etl_pipeline',
         try:
            load_data_to_mongodb()
         except:
-           pass
+           logging.error("Data Loading failed!.")
 
     extract() >> transform() >> load()
