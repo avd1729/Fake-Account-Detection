@@ -18,14 +18,6 @@ logging.basicConfig(
 )
 
 
-connection_string = os.getenv("MONGO_CONN_STRING")
-if not connection_string:
-    logging.error("MongoDB connection string is not set in environment variables.")
-    raise ValueError("Missing MongoDB connection string.")
-
-client = MongoClient(connection_string)
-db = client['fake_account_data'] 
-
 real_users_df = None
 fake_users_df = None
 
@@ -34,7 +26,6 @@ def extract_data_from_csv():
     Extract data from CSV files and store it in global DataFrames.
     """
     global real_users_df, fake_users_df
-    load_dotenv()
 
     real_users = 'data/users.csv' 
     fake_users = 'data/fake_users.csv'
@@ -60,6 +51,16 @@ def load_data_to_mongodb():
         logging.error("DataFrames are empty. Run extract_data_from_csv() first.")
         raise ValueError("No data to load. Extract the data first.")
     
+    load_dotenv()
+    connection_string = os.getenv("MONGO_CONN_STRING")
+
+    if not connection_string:
+        logging.error("MongoDB connection string is not set in environment variables.")
+        raise ValueError("Missing MongoDB connection string.")
+
+    client = MongoClient(connection_string)
+    db = client['fake_account_data'] 
+    
     try:
          real_users_collection = db['real_users']
          fake_users_collection = db['fake_users']
@@ -78,3 +79,6 @@ def load_data_to_mongodb():
 
     print("Data loaded successfully!")
 
+# extract_data_from_csv()
+# transform_data()
+# load_data_to_mongodb()
