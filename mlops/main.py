@@ -2,7 +2,7 @@ from utils.fake_account_detector import FakeAccountDetector
 
 detector = FakeAccountDetector()
     
-X, y = detector.load_and_preprocess_data("C:/Users/Aravind/fake-data-detection/mlops/data/users.csv", "C:/Users/Aravind/fake-data-detection/mlops/data/fake_users.csv")
+X, y = detector.load_and_preprocess_data("real_users", "fake_users")
 results = detector.train(X, y)
     
 
