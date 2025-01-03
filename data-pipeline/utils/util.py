@@ -42,6 +42,8 @@ def extract_data_from_csv():
     real_users_df = pd.read_csv(real_users)
     fake_users_df = pd.read_csv(fake_users)
 
+    logging.info("Extracted data from CSV files.")
+
 def transform_data():
     """
     Transform data to necessary structure.
