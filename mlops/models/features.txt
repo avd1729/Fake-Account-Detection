@@ -1,0 +1,13 @@
+statuses_count
+followers_count
+friends_count
+favourites_count
+listed_count
+default_profile
+default_profile_image
+geo_enabled
+followers_friends_ratio
+statuses_per_follower
+engagement_rate
+profile_completeness
+network_reach
