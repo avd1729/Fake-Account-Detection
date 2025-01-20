@@ -1,0 +1,44 @@
+auth_enabled: false
+
+server:
+  http_listen_port: 3100  # Port on which Loki will listen for incoming requests
+  grpc_listen_port: 9095 # Port for gRPC (optional, usually used for high throughput)
+
+common:
+  replication_factor: 1
+  chunk_target_size: 1048576  # 1MB chunk size (can be adjusted depending on your log volume)
+  max_chunk_age: 1h  # Max chunk age before it gets flushed to the storage backend
+  storage_config:
+    boltdb_shipper:
+      active_index_directory: /loki/index  # Index storage path
+      cache_location: /loki/cache  # Cache location for Boltdb
+      cache_ttl: 24h  # Time-to-live for cache
+    filesystem:
+      directory: /loki/chunks  # Directory where logs will be stored
+  limits_config:
+    max_streams_per_user: 10000  # Max streams allowed per user
+    max_entries_limit_per_query: 5000  # Max entries returned per query
+
+# Configuring Loki's query frontend (can be adjusted based on needs)
+query_range:
+  align_queries_with_step: true
+  max_retries: 5
+  cache_results: true
+
+# Configuring the ingestion of logs
+ingester:
+  max_chunk_age: 1h  # Max time a chunk can live before being flushed
+  chunk_idle_period: 5m  # How long a chunk can sit idle before being flushed
+  max_inflight_chunks_per_user: 10  # Max number of chunks that can be in-flight for a user
+  flush_check_period: 1s  # Period to check if chunks should be flushed
+
+# How much data Loki should retain (you can tune it based on your needs)
+retention:
+  enabled: true
+  duration: 7d  # Retain logs for 7 days
+
+# Optional: Config for Loki's internal HTTP server
+http_config:
+  basic_auth:
+    username: admin  # Set username if you want basic auth for accessing the UI or HTTP API
+    password: admin  # Set password if required
