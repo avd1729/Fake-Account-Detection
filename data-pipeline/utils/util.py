@@ -79,6 +79,6 @@ def load_data_to_mongodb():
 
     print("Data loaded successfully!")
 
-# extract_data_from_csv()
-# transform_data()
-# load_data_to_mongodb()
+extract_data_from_csv()
+transform_data()
+load_data_to_mongodb()
